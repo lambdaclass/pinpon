@@ -6,7 +6,7 @@ import pinpon.ranking as ranking
 
 class PlayerAdmin(admin.ModelAdmin):
     readonly_fields = ('rank', 'points')
-    list_display = ('rank', 'name',)
+    list_display = ('rank', 'name', 'points')
     list_display_links = ('name',)
 
     def rank(self, obj):
@@ -28,37 +28,13 @@ class MatchForm(forms.ModelForm):
 
         return cleaned_data
 
-    def save(self, commit=True):
-        # populate ranking related fields
-        instance = super(MatchForm, self).save(commit=False)
-        current = ranking.current()
-
-        instance.player1_rank, instance.player1_points = ranking.rank(current, instance.player1)
-        instance.player2_rank, instance.player2_points = ranking.rank(current, instance.player2)
-
-        if commit:
-            instance.save()
-        return instance
-
-    class Meta:
-        model = models.Match
-        fields = ('date', 'player1', 'player2')
-
-
 class MatchAdmin(admin.ModelAdmin):
     form = MatchForm
 
     inlines = (SetInline,)
-    readonly_fields = ('winner', 'p1_rank', 'p2_rank')
+    readonly_fields = ('winner',)
     list_display = ('date', '__str__', 'winner')
     list_display_links = ('__str__',)
-
-    def p1_rank(self, obj):
-        return '#{} ({} points)'.format(obj.player1_rank, obj.player1_points)
-
-    def p2_rank(self, obj):
-        return '#{} ({} points)'.format(obj.player2_rank, obj.player2_points)
-
 
 admin.site.register(models.Player, PlayerAdmin)
 admin.site.register(models.Match, MatchAdmin)

@@ -9,8 +9,8 @@ class Player(models.Model):
     aliases = models.CharField(max_length=200, blank=True)
     email = models.EmailField('email address')
     is_active = models.BooleanField('active', default=True)
-    slack_username = models.CharField(max_length=30)
-    slack_emoji = models.CharField(max_length=30)
+    slack_username = models.CharField(max_length=30, blank=True)
+    slack_emoji = models.CharField(max_length=30, blank=True)
 
     def alias_list(self):
         return self.aliases.split()
@@ -39,28 +39,19 @@ class Match(models.Model):
     player1 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player1_set')
     player2 = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='player2_set')
 
-    # the rank/points of the players before the match
-    # (may be useful for scoring algorithms based on ranking)
-    player1_rank = models.PositiveSmallIntegerField()
-    player2_rank = models.PositiveSmallIntegerField()
-    player1_points = models.PositiveIntegerField()
-    player2_points = models.PositiveIntegerField()
-
     def winner(self):
         "The user that won more sets in the game"
         counter = collections.Counter([s.winner() for s in self.sets.all()])
         if counter:
+            # TODO should consider invalid/pending matches?
             return max(counter, key=counter.get)
         else:
             return None
 
     def __str__(self):
-        # FIXME add set results
         sets = [str(s) for s in self.sets.all()]
         sets = ' / '.join(sets)
-        return '{}(#{}) vs {}(#{}): {}'.format(self.player1, self.player1_rank,
-                                                self.player2, self.player2_rank,
-                                                sets)
+        return '{} vs {}: {}'.format(self.player1, self.player2, sets)
 
     class Meta:
         verbose_name_plural = 'matches'
