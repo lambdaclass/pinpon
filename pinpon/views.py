@@ -2,6 +2,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 import pinpon.ranking as ranking
+import pinpon.head2head as head2head
+import pinpon.models as models
 
 @csrf_exempt
 def slack_command(request):
@@ -33,8 +35,21 @@ def format_ranking(data):
     return "#{} :{}: @{} ({} pts)".format(rank, emoji, username, points)
 
 def h2h_command(args):
-    # TODO
-    return "Not implemented yet."
+    player1_alias, player2_alias = args
+    player1 = models.Player.objects.by_alias(player1_alias)
+    player2 = models.Player.objects.by_alias(player2_alias)
+
+    ranks = ranking.current()
+    p1_rank, _ = ranking.rank(ranks, player1)
+    p2_rank, _ = ranking.rank(ranks, player2)
+    h2h = head2head.get(player1, player2)
+    return "#{} :{}: VS #{} :{}:\n{} ({}%) WINS {} ({}%)\n{} ({}%) POINTS {} ({}%)".format(
+        p1_rank, player1.slack_emoji, p2_rank, player2.slack_emoji,
+        h2h[player1]["wins"], h2h[player1]["wins%"],
+        h2h[player2]["wins"], h2h[player2]["wins%"],
+        h2h[player1]["points"], h2h[player1]["points%"],
+        h2h[player2]["points"], h2h[player2]["points%"],
+    )
 
 def error_command(args):
     return "Sorry, I don't understand that command."
