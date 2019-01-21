@@ -29,6 +29,10 @@ def rank(ranking, player):
     rank = ranking[player]
     return rank["rank"], rank["points"]
 
+def export(ranking):
+    entries = sorted(ranking.items(), key=lambda r: r[1]["rank"])
+    return [(r[1]["rank"], r[0], r[1]["points"]) for r in entries]
+
 ## helper functions
 
 def points2rank(counter):
