@@ -35,6 +35,7 @@ class MatchAdmin(admin.ModelAdmin):
     readonly_fields = ('winner',)
     list_display = ('date', '__str__', 'winner')
     list_display_links = ('__str__',)
+    ordering = ('-date',)
 
 admin.site.register(models.Player, PlayerAdmin)
 admin.site.register(models.Match, MatchAdmin)

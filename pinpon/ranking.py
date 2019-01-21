@@ -6,8 +6,7 @@ def current():
     players = models.Player.objects.all()
     counter = {p: 10 for p in players}
 
-    # TODO should be the default order
-    matches = models.Match.objects.order_by('date')
+    matches = models.Match.objects.all()
     for match in matches:
         winner = match.winner()
         if winner:
