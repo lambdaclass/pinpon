@@ -1,10 +1,16 @@
 from django.contrib import admin
 
 import pinpon.models as models
+import pinpon.ranking as ranking
 
 class PlayerAdmin(admin.ModelAdmin):
-    # FIXME no textarea for aliases
-    pass
+    readonly_fields = ('rank',)
+    list_display = ('rank', 'name',)
+    list_display_links = ('name',)
+
+    def rank(self, obj):
+        ranks = ranking.current()
+        return ranking.rank(ranks, obj)
 
 class SetInline(admin.TabularInline):
     model = models.Set

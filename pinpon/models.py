@@ -6,7 +6,7 @@ from django.db import models
 
 class Player(models.Model):
     name = models.CharField(max_length=150, blank=False)
-    aliases = models.TextField(blank=True)
+    aliases = models.CharField(max_length=200, blank=True)
     email = models.EmailField('email address')
     is_active = models.BooleanField('active', default=True)
     slack_username = models.CharField(max_length=30)
@@ -53,6 +53,7 @@ class Match(models.Model):
 
     def __str__(self):
         # FIXME add set results
+        # FIXME add player rankings
         return '{} vs {}'.format(self.player1, self.player2)
 
     class Meta:
