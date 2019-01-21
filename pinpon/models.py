@@ -30,6 +30,9 @@ class Set(models.Model):
         elif self.player1_points < self.player2_points:
             return self.match.player2
 
+    def __str__(self):
+        return '{}-{}'.format(self.player1_points, self.player2_points)
+
 
 class Match(models.Model):
     date = models.DateField(default=datetime.now)
@@ -53,9 +56,11 @@ class Match(models.Model):
 
     def __str__(self):
         # FIXME add set results
-        # FIXME add player rankings
-        return '{} (#{}) vs {} (#{})'.format(self.player1, self.player1_rank,
-                                             self.player2, self.player2_rank)
+        sets = [str(s) for s in self.sets.all()]
+        sets = ' / '.join(sets)
+        return '{}(#{}) vs {}(#{}): {}'.format(self.player1, self.player1_rank,
+                                                self.player2, self.player2_rank,
+                                                sets)
 
     class Meta:
         verbose_name_plural = 'matches'

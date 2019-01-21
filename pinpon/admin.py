@@ -50,7 +50,7 @@ class MatchAdmin(admin.ModelAdmin):
 
     inlines = (SetInline,)
     readonly_fields = ('winner', 'p1_rank', 'p2_rank')
-    list_display = ('date', '__str__')
+    list_display = ('date', '__str__', 'winner')
     list_display_links = ('__str__',)
 
     def p1_rank(self, obj):
