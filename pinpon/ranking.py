@@ -11,6 +11,7 @@ def current():
         winner = match.winner()
         if winner:
             loser = match.player2 if winner is match.player1 else match.player1
+            # we add half of the loser points to the winner
             counter[winner] += counter[loser] // 2
 
     mapping = points2rank(counter)
@@ -19,7 +20,6 @@ def current():
         ranking[player] = {"rank": mapping[points], "points": points}
 
     return ranking
-
 
 def rank(ranking, player):
     """

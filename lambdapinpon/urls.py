@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from pinpon import views
+
 urlpatterns = [
+    path('slack/', views.slack_command, name='slack_command'),
     path('admin/', admin.site.urls),
 ]
