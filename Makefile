@@ -1,4 +1,4 @@
-.PHONY: shell
+.PHONY: init shell server migrate
 
 init:
 	pipenv --three && pipenv install
