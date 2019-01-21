@@ -54,7 +54,8 @@ class Match(models.Model):
     def __str__(self):
         # FIXME add set results
         # FIXME add player rankings
-        return '{} vs {}'.format(self.player1, self.player2)
+        return '{} (#{}) vs {} (#{})'.format(self.player1, self.player1_rank,
+                                             self.player2, self.player2_rank)
 
     class Meta:
         verbose_name_plural = 'matches'

@@ -5,12 +5,8 @@ def current():
 
 def rank(ranking, user):
     """
-    Return the current ranking of the given user.
+    Return the current ranking and points of the given user.
     Users with the same amount of points will have the same ranking.
     """
     # FIXME implement
-    return 1
-
-def points(ranking, user):
-    # FIXME implement
-    return 0
+    return 1, 0
