@@ -10,12 +10,14 @@ class PlayerAdmin(admin.ModelAdmin):
     list_display_links = ('name',)
 
     def rank(self, obj):
-        current = ranking.current()
-        return ranking.rank(current, obj)[0]
+        if obj.pk:
+            current = ranking.current()
+            return ranking.rank(current, obj)[0]
 
     def points(self, obj):
-        current = ranking.current()
-        return ranking.rank(current, obj)[1]
+        if obj.pk:
+            current = ranking.current()
+            return ranking.rank(current, obj)[1]
 
 class SetInline(admin.TabularInline):
     model = models.Set
