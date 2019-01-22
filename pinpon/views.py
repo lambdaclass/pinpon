@@ -30,9 +30,9 @@ def ranking_command(args):
 def format_ranking(data):
     rank = data[0]
     emoji = data[1].slack_emoji
-    username = data[1].slack_username
+    name = data[1].name
     points = data[2]
-    return "#{} :{}: @{} ({} pts)".format(rank, emoji, username, points)
+    return "#{} :{}: {} ({} pts)".format(rank, emoji, name, points)
 
 def h2h_command(args):
     player1_alias, player2_alias = args
