@@ -62,7 +62,6 @@ class LoloRankingStrategy(BaseRankingStrategy):
         return 0
 
 class EloRankingStrategy(BaseRankingStrategy):
-    # The maximum possible adjustment per game set at K = 16 for masters and K = 32 for weaker players.
     def get_winner_points(self, counter, winner, loser):
         points_winner = counter[winner]
         points_loser = counter[loser]
@@ -77,6 +76,10 @@ class EloRankingStrategy(BaseRankingStrategy):
         return 1 / (1 + 10 ** ((points1 - points2) / 400))
 
     def _k_factor(self, points):
+        """
+        The maximum possible adjustment per game set at K = 16 for masters and
+        K = 32 for weaker players.
+        """
         if points <= 100:
             return 32
         elif points <= 200:
