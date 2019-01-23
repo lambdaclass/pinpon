@@ -1,9 +1,9 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-import pinpon.ranking as ranking
 import pinpon.head2head as head2head
 import pinpon.models as models
+from pinpon.ranking import EloRankingStrategy
 
 @csrf_exempt
 def slack_command(request):
@@ -23,8 +23,8 @@ def slack_command(request):
     return JsonResponse({"response_type": "in_channel", "text": response_text})
 
 def ranking_command(args):
-    current = ranking.current()
-    data = ranking.export(current)
+    ranking = EloRankingStrategy()
+    data = ranking.export()
     return "\n".join(map(format_ranking, data))
 
 def format_ranking(data):
@@ -39,9 +39,9 @@ def h2h_command(args):
     player1 = models.Player.objects.by_alias(player1_alias)
     player2 = models.Player.objects.by_alias(player2_alias)
 
-    ranks = ranking.current()
-    p1_rank, _ = ranking.rank(ranks, player1)
-    p2_rank, _ = ranking.rank(ranks, player2)
+    ranking = EloRankingStrategy()
+    p1_rank = ranking.rank(player1)
+    p2_rank = ranking.rank(player2)
     h2h = head2head.get(player1, player2)
     return "#{} :{}: VS #{} :{}:\n{} ({}%) WINS {} ({}%)\n{} ({}%) POINTS {} ({}%)".format(
         p1_rank, player1.slack_emoji, p2_rank, player2.slack_emoji,
