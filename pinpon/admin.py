@@ -2,22 +2,32 @@ from django.contrib import admin
 from django import forms
 
 import pinpon.models as models
-import pinpon.ranking as ranking
+from pinpon.ranking import EloRankingStrategy
+
+class PlayerForm(forms.ModelForm):
+
+    def clean_slack_username(self):
+        return self.cleaned_data['slack_username'].strip('@')
+
+    def clean_slack_emoji(self):
+        return self.cleaned_data['slack_emoji'].strip(':')
 
 class PlayerAdmin(admin.ModelAdmin):
+    form = PlayerForm
+
     readonly_fields = ('rank', 'points')
     list_display = ('rank', 'name', 'points')
     list_display_links = ('name',)
 
     def rank(self, obj):
         if obj.pk:
-            current = ranking.current()
-            return ranking.rank(current, obj)[0]
+            ranking = EloRankingStrategy()
+            return ranking.rank(obj)
 
     def points(self, obj):
         if obj.pk:
-            current = ranking.current()
-            return ranking.rank(current, obj)[1]
+            ranking = EloRankingStrategy()
+            return ranking.points(obj)
 
 class SetInline(admin.TabularInline):
     model = models.Set
