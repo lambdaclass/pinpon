@@ -11,3 +11,9 @@ server:
 
 migrate:
 	pipenv run python manage.py makemigrations pinpon && pipenv run python manage.py migrate
+
+superuser:
+	pipenv run python manage.py createsuperuser
+
+prod_db:
+	scp root@pinpon.lambdaclass.com:/var/www/pinpon/db.sqlite3 .
