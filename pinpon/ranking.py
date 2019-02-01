@@ -1,3 +1,4 @@
+import datetime
 import pinpon.models as models
 
 class BaseRankingStrategy():
@@ -5,7 +6,8 @@ class BaseRankingStrategy():
         players = models.Player.objects.all()
         counter = {p: 100 for p in players}
 
-        matches = models.Match.objects.all()
+        three_months_ago = datetime.datetime.today() - datetime.timedelta(days=90)
+        matches = models.Match.objects.filter(date__gte=three_months_ago)
         for match in matches:
             winner = match.winner()
             if winner:
