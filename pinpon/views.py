@@ -1,3 +1,4 @@
+import datetime
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -12,7 +13,9 @@ def slack_command(request):
         "rank": ranking_command,
         "ranking": ranking_command,
         "h2h": h2h_command,
-        "head2head": h2h_command
+        "head2head": h2h_command,
+        "match": match_command,
+        "save": match_command,
     }
 
     args = request.POST["text"].split()
@@ -33,6 +36,29 @@ def format_ranking(data):
     name = data[1].name
     points = data[2]
     return "#{} :{}: {} ({} pts)".format(rank, emoji, name, points)
+
+def match_command(args):
+    today = datetime.datetime.today()
+    player1_alias = args[0]
+    player2_alias = args[1]
+    player1 = models.Player.objects.by_alias(player1_alias)
+    player2 = models.Player.objects.by_alias(player2_alias)
+
+    match = models.Match.objects.create(player1=player1, player2=player2, date=today)
+
+    if len(args) > 2:
+        sets = args[2].split('/')
+        for s in sets:
+            player1_points, player2_points = map(int, s.split('-'))
+            models.Set.objects.create(match=match, player1_points=player1_points, player2_points=player2_points)
+    else:
+        models.Set.objects.create(match=match, player1_points=21, player2_points=1)
+
+    return "Done!"
+
+
+
+
 
 def h2h_command(args):
     player1_alias, player2_alias = args

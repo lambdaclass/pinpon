@@ -19,5 +19,7 @@ command to the `/slack/` endpoint of the application.
 
 * `/pinpon ranking`: return the current player rankings.
 * `/pinpon h2h user1 user2`: return the head to head stats of two users.
+* `/pinpon match user1 user2 11-1/3-11/11-5`: save a new match.
+* `/pinpon match user1 user2`: save a generic 21-1 match.
 
 ![rank](rank.png)
