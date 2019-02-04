@@ -4,7 +4,7 @@ import pinpon.models as models
 class BaseRankingStrategy():
     def __init__(self):
         players = models.Player.objects.all()
-        counter = {p: 100 for p in players}
+        counter = {p: self.default_points() for p in players}
 
         three_months_ago = datetime.datetime.today() - datetime.timedelta(days=90)
         matches = models.Match.objects.filter(date__gte=three_months_ago)
@@ -12,8 +12,11 @@ class BaseRankingStrategy():
             winner = match.winner()
             if winner:
                 loser = match.player2 if winner is match.player1 else match.player1
-                counter[winner] += int(self.get_winner_points(counter, winner, loser))
-                counter[loser] += int(self.get_loser_points(counter, winner, loser))
+                points_winner = self.get_winner_points(counter[winner], counter[loser])
+                points_loser = self.get_loser_points(counter[winner], counter[loser])
+
+                counter[winner] = self._clean_points(points_winner)
+                counter[loser] = self._clean_points(points_loser)
 
         mapping = self._points2rank(counter)
         ranking = {}
@@ -21,6 +24,10 @@ class BaseRankingStrategy():
             ranking[player] = {"rank": mapping[points], "points": points}
 
         self.ranking = ranking
+
+    def _clean_points(self, points):
+        # don't allow points below 1
+        return max(1, int(points))
 
     def _points2rank(self, counter):
         """
@@ -55,27 +62,31 @@ class BaseRankingStrategy():
         entries = sorted(self.ranking.items(), key=lambda r: r[1]["rank"])
         return [(r[1]["rank"], r[0], r[1]["points"]) for r in entries]
 
-class LoloRankingStrategy(BaseRankingStrategy):
-    def get_winner_points(self, counter, winner, loser):
-        # we add half of the loser points to the winner
-        return counter[loser] // 2
 
-    def get_loser_points(self, counter, winner, loser):
+class LoloRankingStrategy(BaseRankingStrategy):
+    def default_points(self):
+        return 100
+
+    def get_winner_points(self, winner, loser):
+        # we add half of the loser points to the winner
+        return points_winner + points_loser // 2
+
+    def get_loser_points(self, points_winner, points_loser):
         return 0
 
-class EloRankingStrategy(BaseRankingStrategy):
-    def get_winner_points(self, counter, winner, loser):
-        points_winner = counter[winner]
-        points_loser = counter[loser]
-        return self._k_factor(points_winner) * (1 - self._expectation(points_winner, points_loser))
 
-    def get_loser_points(self, counter, winner, loser):
-        points_winner = counter[winner]
-        points_loser = counter[loser]
-        return - self._k_factor(points_winner) * self._expectation(points_winner, points_loser)
+class EloRankingStrategy(BaseRankingStrategy):
+    def default_points(self):
+        return 100
+
+    def get_winner_points(self, points_winner, points_loser):
+        return points_winner + self._k_factor(points_winner) * self._expectation(points_winner, points_loser)
+
+    def get_loser_points(self, points_winner, points_loser):
+        return points_loser - self._k_factor(points_winner) * self._expectation(points_loser, points_winner)
 
     def _expectation(self, points1, points2):
-        return 1 / (1 + 10 ** ((points1 - points2) / 400))
+        return 1 / (1 + 10 ** ((points2 - points1) / 400))
 
     def _k_factor(self, points):
         """
