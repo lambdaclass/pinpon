@@ -16,6 +16,7 @@ def slack_command(request):
         "head2head": h2h_command,
         "match": match_command,
         "save": match_command,
+        "elo": elo_command
     }
 
     args = request.POST["text"].split()
@@ -56,8 +57,22 @@ def match_command(args):
 
     return "Done!"
 
+def elo_command(args):
+    player1_alias, player2_alias = args
+    player1 = models.Player.objects.by_alias(player1_alias)
+    player2 = models.Player.objects.by_alias(player2_alias)
 
+    elo = EloRankingStrategy()
+    p1_points = elo.points(player1)
+    p2_points = elo.points(player2)
 
+    probability = elo._expectation(p1_points, p2_points)
+    winner_points = elo.get_winner_points(p1_points, p2_points) - p1_points
+    loss_points = elo.get_loser_points(p2_points, p1_points) - p1_points
+
+    return "P(win) = {}\nwin points: {}\nloss points: {}".format(probability,
+                                                                 winner_points,
+                                                                 loss_points)
 
 
 def h2h_command(args):
