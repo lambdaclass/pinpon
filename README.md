@@ -21,5 +21,7 @@ command to the `/slack/` endpoint of the application.
 * `/pinpon h2h user1 user2`: return the head to head stats of two users.
 * `/pinpon match user1 user2 11-1/3-11/11-5`: save a new match.
 * `/pinpon match user1 user2`: save a generic 21-1 match.
+* `/pinpon elo user1 user2`: return the ELO expected probability if user1 beating user2, 
+and the points each would get.
 
 ![rank](rank.png)
