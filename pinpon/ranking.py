@@ -27,7 +27,7 @@ class BaseRankingStrategy():
 
     def _clean_points(self, points):
         # don't allow points below 1
-        return max(1, int(points))
+        return max(1, round(points))
 
     def _points2rank(self, counter):
         """
@@ -67,11 +67,11 @@ class LoloRankingStrategy(BaseRankingStrategy):
     def default_points(self):
         return 100
 
-    def get_winner_points(self, winner, loser):
+    def get_winner_points(self, points_winner, points_loser):
         # we add half of the loser points to the winner
         return points_winner + points_loser // 2
 
-    def get_loser_points(self, points_winner, points_loser):
+    def get_loser_points(self, _points_winner, _points_loser):
         return 0
 
 
@@ -80,7 +80,7 @@ class EloRankingStrategy(BaseRankingStrategy):
         return 100
 
     def get_winner_points(self, points_winner, points_loser):
-        return points_winner + self._k_factor(points_winner) * self._expectation(points_winner, points_loser)
+        return points_winner + self._k_factor(points_winner) * self._expectation(points_loser, points_winner)
 
     def get_loser_points(self, points_winner, points_loser):
         return points_loser - self._k_factor(points_winner) * self._expectation(points_loser, points_winner)
