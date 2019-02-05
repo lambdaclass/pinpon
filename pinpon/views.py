@@ -68,11 +68,11 @@ def elo_command(args):
 
     probability = elo._expectation(p1_points, p2_points)
     winner_points = elo.get_winner_points(p1_points, p2_points) - p1_points
-    loss_points = elo.get_loser_points(p2_points, p1_points) - p1_points
+    loss_points = max(1, elo.get_loser_points(p2_points, p1_points) - p1_points)
 
-    return "P(win) = {}\nwin points: {}\nloss points: {}".format(probability,
-                                                                 winner_points,
-                                                                 loss_points)
+    return "P(win) = {:+.2f}\nwin points: {}\nloss points: {}".format(probability,
+                                                                      round(winner_points),
+                                                                      round(loss_points))
 
 
 def h2h_command(args):
@@ -84,12 +84,10 @@ def h2h_command(args):
     p1_rank = ranking.rank(player1)
     p2_rank = ranking.rank(player2)
     h2h = head2head.get(player1, player2)
-    return "#{} :{}: VS #{} :{}:\n{} ({}%) WINS {} ({}%)\n{} ({}%) POINTS {} ({}%)".format(
+    return "#{} :{}: VS #{} :{}:\n{} ({}%) WINS {} ({}%)".format(
         p1_rank, player1.slack_emoji, p2_rank, player2.slack_emoji,
         h2h[player1]["wins"], h2h[player1]["wins%"],
         h2h[player2]["wins"], h2h[player2]["wins%"],
-        h2h[player1]["points"], h2h[player1]["points%"],
-        h2h[player2]["points"], h2h[player2]["points%"],
     )
 
 def error_command(args):
