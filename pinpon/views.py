@@ -70,7 +70,7 @@ def elo_command(args):
     winner_points = elo.get_winner_points(p1_points, p2_points) - p1_points
     loss_points = max(1, elo.get_loser_points(p2_points, p1_points) - p1_points)
 
-    return "P(win) = {:+.2f}\nwin points: {}\nloss points: {}".format(probability,
+    return "P(win) = {:.2f}\nwin points: {}\nloss points: {}".format(probability,
                                                                       round(winner_points),
                                                                       round(loss_points))
 
