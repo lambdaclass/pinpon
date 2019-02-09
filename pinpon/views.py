@@ -103,7 +103,7 @@ def help_command(args):
     Prints this help message.
     """
     docs = [cmd.__doc__ for cmd in SLACK_COMMANDS.values()]
-    return "".join(docs)
+    return "".join(docs).strip()
 
 
 def error_command(args):
