@@ -9,15 +9,6 @@ from pinpon.ranking import EloRankingStrategy
 @csrf_exempt
 def slack_command(request):
     "Called to handle slack slash commands."
-    SLACK_COMMANDS = {
-        "rank": ranking_command,
-        "ranking": ranking_command,
-        "h2h": h2h_command,
-        "head2head": h2h_command,
-        "match": match_command,
-        "save": match_command,
-        "elo": elo_command
-    }
 
     args = request.POST["text"].split()
     name, args = args[0], args[1:]
@@ -27,6 +18,10 @@ def slack_command(request):
     return JsonResponse({"response_type": "in_channel", "text": response_text})
 
 def ranking_command(args):
+    """
+    /pinpon rank
+    Prints the player rankings.
+    """
     ranking = EloRankingStrategy()
     data = ranking.export()
     return "\n".join(map(format_ranking, data))
@@ -38,7 +33,12 @@ def format_ranking(data):
     points = data[2]
     return "#{} :{}: {} ({} pts)".format(rank, emoji, name, points)
 
-def match_command(args):
+def save_command(args):
+    """
+    /pinpon save turco manu 11-4/5-11/14-12
+    /pinpon save turco manu
+    Saves a match between the given players.
+    """
     today = datetime.datetime.today()
     player1_alias = args[0]
     player2_alias = args[1]
@@ -58,6 +58,10 @@ def match_command(args):
     return "Done!"
 
 def elo_command(args):
+    """
+    /pinpon elo turco manu
+    Returns the ELO prediction of the outcome of a game.
+    """
     player1_alias, player2_alias = args
     player1 = models.Player.objects.by_alias(player1_alias)
     player2 = models.Player.objects.by_alias(player2_alias)
@@ -74,8 +78,11 @@ def elo_command(args):
                                                                       round(winner_points),
                                                                       round(loss_points))
 
-
 def h2h_command(args):
+    """
+    /pinpon h2h turco manu
+    Returns the head2head of the given players.
+    """
     player1_alias, player2_alias = args
     player1 = models.Player.objects.by_alias(player1_alias)
     player2 = models.Player.objects.by_alias(player2_alias)
@@ -90,5 +97,25 @@ def h2h_command(args):
         h2h[player2]["wins"], h2h[player2]["wins%"],
     )
 
+def help_command(args):
+    """
+    /pinpon help
+    Prints this help message.
+    """
+    string = ""
+    for cmd_name in SLACK_COMMANDS:
+        cmd = SLACK_COMMANDS[cmd_name].__doc__
+        string += "{} {}\n".format(cmd_name, cmd)
+    return string
+
+
 def error_command(args):
     return "Sorry, I don't understand that command."
+
+SLACK_COMMANDS = {
+    "rank": ranking_command,
+    "h2h": h2h_command,
+    "save": save_command,
+    "elo": elo_command,
+    "help": help_command
+}
