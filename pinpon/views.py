@@ -102,8 +102,8 @@ def help_command(args):
     `/pinpon help`
     Prints this help message.
     """
-    docs = [cmd.__doc__ for cmd in SLACK_COMMANDS.values()]
-    return " " + "".join(docs).strip()
+    docs = [cmd.__doc__.strip() for cmd in SLACK_COMMANDS.values()]
+    return "\n\n".join(docs).strip()
 
 
 def error_command(args):
