@@ -19,7 +19,7 @@ def slack_command(request):
 
 def ranking_command(args):
     """
-    /pinpon rank
+    `/pinpon rank`
     Prints the player rankings.
     """
     ranking = EloRankingStrategy()
@@ -35,8 +35,8 @@ def format_ranking(data):
 
 def save_command(args):
     """
-    /pinpon save turco manu 11-4/5-11/14-12
-    /pinpon save turco manu
+    `/pinpon save turco manu 11-4/5-11/14-12`
+    `/pinpon save turco manu`
     Saves a match between the given players.
     """
     today = datetime.datetime.today()
@@ -59,7 +59,7 @@ def save_command(args):
 
 def elo_command(args):
     """
-    /pinpon elo turco manu
+    `/pinpon elo turco manu`
     Returns the ELO prediction of the outcome of a game.
     """
     player1_alias, player2_alias = args
@@ -80,7 +80,7 @@ def elo_command(args):
 
 def h2h_command(args):
     """
-    /pinpon h2h turco manu
+    `/pinpon h2h turco manu`
     Returns the head2head of the given players.
     """
     player1_alias, player2_alias = args
@@ -99,14 +99,11 @@ def h2h_command(args):
 
 def help_command(args):
     """
-    /pinpon help
+    `/pinpon help`
     Prints this help message.
     """
-    string = ""
-    for cmd_name in SLACK_COMMANDS:
-        cmd = SLACK_COMMANDS[cmd_name].__doc__
-        string += "{} {}\n".format(cmd_name, cmd)
-    return string
+    docs = [cmd.__doc__ for cmd in SLACK_COMMANDS.values()]
+    return "".join(docs)
 
 
 def error_command(args):
