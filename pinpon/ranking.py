@@ -77,7 +77,7 @@ class LoloRankingStrategy(BaseRankingStrategy):
 
 class EloRankingStrategy(BaseRankingStrategy):
     def default_points(self):
-        return 100
+        return 2000
 
     def get_winner_points(self, points_winner, points_loser):
         return points_winner + self._k_factor(points_winner) * self._expectation(points_loser, points_winner)
@@ -93,9 +93,9 @@ class EloRankingStrategy(BaseRankingStrategy):
         The maximum possible adjustment per game set at K = 16 for masters and
         K = 32 for weaker players.
         """
-        if points <= 100:
+        if points < 2000:
             return 32
-        elif points <= 200:
+        elif points < 2100:
             return 24
         else:
             return 16
