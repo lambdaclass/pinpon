@@ -2,7 +2,7 @@ from django.contrib import admin
 from django import forms
 
 import pinpon.models as models
-from pinpon.ranking import EloRankingStrategy
+import pinpon.ranking as ranking
 
 class PlayerForm(forms.ModelForm):
 
@@ -21,13 +21,11 @@ class PlayerAdmin(admin.ModelAdmin):
 
     def rank(self, obj):
         if obj.pk:
-            ranking = EloRankingStrategy()
-            return ranking.rank(obj)
+            return ranking.get().rank(obj)
 
     def points(self, obj):
         if obj.pk:
-            ranking = EloRankingStrategy()
-            return ranking.points(obj)
+            return ranking.get().points(obj)
 
 class SetInline(admin.TabularInline):
     model = models.Set

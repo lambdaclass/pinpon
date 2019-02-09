@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import pinpon.head2head as head2head
 import pinpon.models as models
-from pinpon.ranking import EloRankingStrategy
+import pinpon.ranking as ranking
 
 @csrf_exempt
 def slack_command(request):
@@ -22,8 +22,7 @@ def ranking_command(args):
     `/pinpon rank`
     Prints the player rankings.
     """
-    ranking = EloRankingStrategy()
-    data = ranking.export()
+    data = ranking.get().export()
     return "\n".join(map(format_ranking, data))
 
 def format_ranking(data):
@@ -65,9 +64,8 @@ def elo_command(args):
     player1 = models.Player.objects.by_alias(player1_alias)
     player2 = models.Player.objects.by_alias(player2_alias)
 
-    elo = EloRankingStrategy()
-    p1_points = elo.points(player1)
-    p2_points = elo.points(player2)
+    p1_points = ranking.get().points(player1)
+    p2_points = ranking.get().points(player2)
 
     probability = elo._expectation(p1_points, p2_points)
     winner_points = elo.get_winner_points(p1_points, p2_points) - p1_points
@@ -86,9 +84,8 @@ def h2h_command(args):
     player1 = models.Player.objects.by_alias(player1_alias)
     player2 = models.Player.objects.by_alias(player2_alias)
 
-    ranking = EloRankingStrategy()
-    p1_rank = ranking.rank(player1)
-    p2_rank = ranking.rank(player2)
+    p1_rank = ranking.get().rank(player1)
+    p2_rank = ranking.get().rank(player2)
     h2h = head2head.get(player1, player2)
     return "#{} :{}: VS #{} :{}:\n{} ({}%) WINS {} ({}%)".format(
         p1_rank, player1.slack_emoji, p2_rank, player2.slack_emoji,

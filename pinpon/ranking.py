@@ -1,6 +1,10 @@
 import datetime
 import pinpon.models as models
 
+from django.core.cache import cache
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+
 class BaseRankingStrategy():
     def __init__(self):
         players = models.Player.objects.all()
@@ -99,3 +103,19 @@ class EloRankingStrategy(BaseRankingStrategy):
             return 24
         else:
             return 16
+
+@receiver(post_save, sender=models.Match)
+@receiver(post_delete, sender=models.Match)
+def reset(sender, **kwargs):
+    """
+    When a match is saved or deleted, delete the cached ranking.
+    """
+    cache.delete('ranking')
+
+def get():
+    """
+    Return the current version of the ranking.
+    """
+    if not cache.get('ranking'):
+        cache.set('ranking', EloRankingStrategy(), None)
+    return cache.get('ranking')
