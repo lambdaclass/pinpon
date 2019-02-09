@@ -35,7 +35,6 @@ def format_ranking(data):
 
 def save_command(args):
     """
-    `/pinpon save turco manu 11-4/5-11/14-12`
     `/pinpon save turco manu`
     Saves a match between the given players.
     """
