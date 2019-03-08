@@ -97,9 +97,9 @@ class EloRankingStrategy(BaseRankingStrategy):
         The maximum possible adjustment per game set at K = 16 for masters and
         K = 32 for weaker players.
         """
-        if points < 2000:
+        if points < 1900:
             return 32
-        elif points < 2100:
+        elif points < 2000:
             return 24
         else:
             return 16
